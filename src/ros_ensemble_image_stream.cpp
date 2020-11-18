@@ -36,7 +36,7 @@ int main(int argc, char **argv)
 	std::string image_node_name = str_node_name + "/image" ;
 	
 	ros::NodeHandle nh;
-	ros::Subscriber sub = nh.subscribe("ensemble_nx_29/image", 5, imageCallback);
+	ros::Subscriber sub = nh.subscribe(image_node_name, 5, imageCallback);
 
 	ros::spin();
 	//cv::destroyWindow("view");
