@@ -22,7 +22,7 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 
 int main(int argc, char **argv)
 {
-	cv::namedWindow("view", cv::WINDOW_AUTOSIZE);
+	cv::namedWindow("view", cv::WINDOW_NORMAL);
     cv::setWindowProperty("view", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
 	
 	ros::init(argc, argv, "image_stream");
