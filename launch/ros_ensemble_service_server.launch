@@ -1,0 +1,28 @@
+<launch>
+	<arg name="name" default="ensemble" />
+	<arg name="dnn_config_path" default="/home/ensemble/object_detect_train_result/20201007_orange/iforange.cfg" />
+	<arg name="dnn_weight_path" default="/home/ensemble/object_detect_train_result/20201007_orange/iforange_last.weights" />
+	<arg name="dnn_meta_path" default="/home/ensemble/object_detect_train_result/20201007_orange/iforange.data" />
+	<arg name="threshold" default="0.5" />
+	<arg name="b_use_gaussian_pdf" default="0" />
+	
+	<node pkg="ros_ensemble_service" type="ros_ensemble_service_node_server" respawn="true" name="$(arg name)" >
+		<!-- DNN Config File Path -->
+		<param name="dnn_config_path" type="string" value="$(arg dnn_config_path)" />
+		
+		<!-- DNN Weight File Path -->
+		<param name="dnn_weight_path" type="string" value="$(arg dnn_weight_path)" />
+
+		<!-- DNN meta File Path -->
+		<param name="dnn_meta_path" type="string" value="$(arg dnn_meta_path)" />
+
+		<!-- DNN meta File Path -->
+		<param name="threshold" value="$(arg threshold)" />
+
+		<!-- Object Detector Option -->
+		<param name="config/detector/b_use_gaussian_pdf" type="bool" value="$(arg b_use_gaussian_pdf)" />
+		
+		<!-- internal name -->
+		<param name="name" value="$(arg name)" />
+	</node>
+</launch>
