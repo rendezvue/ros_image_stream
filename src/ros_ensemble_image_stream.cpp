@@ -7,7 +7,7 @@
 #include <std_msgs/UInt8MultiArray.h>
 
 void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
-{
+{	   
 	try
 	{
 		cv::Mat frame = cv::imdecode(array->data, 1);
@@ -22,6 +22,9 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 
 int main(int argc, char **argv)
 {
+	cv::namedWindow("view", cv::WINDOW_AUTOSIZE);
+    cv::setWindowProperty("view", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
+	
 	ros::init(argc, argv, "image_stream");
 
 	ros::NodeHandle nhp("~");
