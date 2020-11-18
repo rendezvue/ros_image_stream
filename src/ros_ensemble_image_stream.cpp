@@ -11,6 +11,17 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 	try
 	{
 		cv::Mat frame = cv::imdecode(array->data, 1);
+
+		const int w = 1920 ;
+		const int h = 1080 ;
+		const float w_scale = (float)w / (float)frame.cols ;
+		const float h_scale = (float)h / (float)frame.cols ;
+		const float scale = cv::min(w_scale, h_scale) ;
+		if( scale < 1.0 )
+		{
+			cv::resize(frame, frame, cv::Size(), scale, scale) ;
+		}
+		
 		cv::imshow("view", frame);
 		cv::waitKey(1);
 	}
