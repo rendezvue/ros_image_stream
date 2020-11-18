@@ -1,0 +1,8 @@
+<launch>
+	<arg name="server_name" default="ensemble" />
+	
+	<node pkg="ros_image_stream" type="ros_image_stream" name="image_stream" >
+		<!-- command -->		
+		<param name="server_name" value="$(arg server_name)" />
+	</node>
+</launch>
