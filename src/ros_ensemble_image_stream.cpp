@@ -23,7 +23,7 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 		}
 		
 		cv::imshow("view", frame);
-		cv::waitKey(1);
+		cv::waitKey(33);
 	}
 	catch (cv_bridge::Exception& e)
 	{
