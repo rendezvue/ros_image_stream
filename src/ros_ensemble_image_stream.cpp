@@ -22,13 +22,21 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 
 int main(int argc, char **argv)
 {
-	ros::init(argc, argv, "ensemble_image_sub");
+	ros::init(argc, argv, "image_stream");
 
+	ros::NodeHandle nhp("~");
+	std::string str_node_name;
+	nhp.getParam("server_name", str_node_name);
+
+	ROS_INFO("Got parameter name : %s", str_node_name.c_str());
+
+	
 	//cv::namedWindow("view");
 	//cv::startWindowThread();
-
+	std::string image_node_name = str_node_name + "/image" ;
+	
 	ros::NodeHandle nh;
-	ros::Subscriber sub = nh.subscribe("ensemble/image", 5, imageCallback);
+	ros::Subscriber sub = nh.subscribe(image_node_name, 5, imageCallback);
 
 	ros::spin();
 	//cv::destroyWindow("view");
