@@ -21,8 +21,22 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 		{
 			cv::resize(frame, frame, cv::Size(), scale, scale) ;
 		}
+
+		cv::Mat display = cv::Mat::zeros(cv::Size(w,h), CV_8UC3) ;
+
+		cv::Rect roi_display = cv::Rect((w-frame.cols)/2,(h-frame.rows)/2,frame.cols,frame.rows) ;
+		if(roi_display.x < 0 )	roi_display.x = 0 ;
+		if(roi_display.y < 0 )	roi_display.y = 0 ;
+		if(roi_display.x + roi_display.width > w )	roi_display.width = w - roi_display.x ;
+		if(roi_display.y + roi_display.height > h )	roi_display.height = h - roi_display.y ;
 		
-		cv::imshow("view", frame);
+		cv::Rect roi_from = cv::Rect(0,0,frame.cols,frame.rows) ;
+		if( roi_from.width > roi_display.width )	roi_from.width = roi_display.width ;
+		if( roi_from.height > roi_display.height )	roi_from.height = roi_display.height ;
+		
+		display(roi_display) = frame(roi_from) ;
+			
+		cv::imshow("view", display);
 		cv::waitKey(33);
 	}
 	catch (cv_bridge::Exception& e)
