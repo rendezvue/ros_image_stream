@@ -1,4 +1,4 @@
-project(Find_Hidden_Object)
+project(test)
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -15,8 +15,8 @@ FILE(GLOB SRC
 )
 include_directories(${SRC_PATH})
 
-add_executable( Find_Hidden_Object 
+add_executable( test 
 	${SRC} 
 )
 
-target_link_libraries(Find_Hidden_Object ${OpenCV_LIBS})
+target_link_libraries(test ${OpenCV_LIBS})
