@@ -1,4 +1,6 @@
 #include <ros/ros.h>
+#include <ros/master.h>
+
 #include <opencv2/opencv.hpp>
 #include <image_transport/image_transport.h>
 #include <opencv2/highgui/highgui.hpp>
@@ -53,9 +55,6 @@ void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 
 int main(int argc, char **argv)
 {
-	cv::namedWindow("view", cv::WINDOW_NORMAL);
-    cv::setWindowProperty("view", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
-	
 	ros::init(argc, argv, "image_stream");
 
 	ros::NodeHandle nhp("~");
@@ -64,14 +63,44 @@ int main(int argc, char **argv)
 	
 	ROS_INFO("Got parameter name : %s", str_node_name.c_str());
 
-	
-	//cv::namedWindow("view");
-	//cv::startWindowThread();
 	std::string image_node_name = str_node_name + "/image" ;
 	
+	bool b_topic_ok = false ;	
+
+	std::string str_check_topic_name = "/" + image_node_name ;
+	printf("Checking Topic : %s\n", str_check_topic_name.c_str()) ;
+	
+	//wait
+	while(b_topic_ok == false)
+	{
+		ros::master::V_TopicInfo topic_infos;
+  		ros::master::getTopics(topic_infos);
+	
+		for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++) 
+		{
+			const ros::master::TopicInfo& info = *it;
+			//std::cout << "topic_" << it - topic_infos.begin() << ": " << info.name << std::endl;
+			
+			if( str_check_topic_name == info.name )
+			{
+				//printf("topic ok\n") ;
+				
+				b_topic_ok = true ;
+				break ;
+			}
+		}
+	}
+
+	printf("Checked Topic : %s - Start Program\n", str_check_topic_name.c_str()) ;
+
+	cv::namedWindow("view", cv::WINDOW_NORMAL);
+    cv::setWindowProperty("view", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
+
 	ros::NodeHandle nh;
 	ros::Subscriber sub = nh.subscribe(image_node_name, 5, imageCallback);
 
 	ros::spin();
+
+	return 0 ;
 	//cv::destroyWindow("view");
 }
