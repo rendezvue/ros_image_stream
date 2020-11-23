@@ -1,4 +1,4 @@
-project(test)
+project(rosrun_prog)
 
 cmake_minimum_required(VERSION 2.8)
 
@@ -15,8 +15,8 @@ FILE(GLOB SRC
 )
 include_directories(${SRC_PATH})
 
-add_executable( test 
+add_executable( rosrun_prog 
 	${SRC} 
 )
 
-target_link_libraries(test ${OpenCV_LIBS})
+target_link_libraries(rosrun_prog ${OpenCV_LIBS})
