@@ -8,8 +8,29 @@
 #include <vector>
 #include <std_msgs/UInt8MultiArray.h>
 
+//boost 
+#include <boost/asio.hpp>
+#include <boost/thread.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/ini_parser.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/regex.hpp>
+
+#include <boost/range/iterator_range.hpp>
+#include <boost/system/error_code.hpp>
+#include <boost/filesystem/path.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <boost/iostreams/categories.hpp>  // sink_tag
+#include <iterator>  // back_inserter
+#include "boost/date_time/local_time/local_time.hpp"
+
+
+boost::posix_time::ptime g_check_time ;
+
 void imageCallback(const std_msgs::UInt8MultiArray::ConstPtr& array)
 {	   
+	g_check_time = boost::posix_time::second_clock::local_time();
+	
 	try
 	{
 		cv::Mat frame = cv::imdecode(array->data, 1);
@@ -64,42 +85,53 @@ int main(int argc, char **argv)
 	ROS_INFO("Got parameter name : %s", str_node_name.c_str());
 
 	std::string image_node_name = str_node_name + "/image" ;
-	
-	bool b_topic_ok = false ;	
-
-	std::string str_check_topic_name = "/" + image_node_name ;
-	printf("Checking Topic : %s\n", str_check_topic_name.c_str()) ;
-	
-	//wait
-	while(b_topic_ok == false)
-	{
-		ros::master::V_TopicInfo topic_infos;
-  		ros::master::getTopics(topic_infos);
-	
-		for (ros::master::V_TopicInfo::iterator it = topic_infos.begin() ; it != topic_infos.end(); it++) 
-		{
-			const ros::master::TopicInfo& info = *it;
-			//std::cout << "topic_" << it - topic_infos.begin() << ": " << info.name << std::endl;
-			
-			if( str_check_topic_name == info.name )
-			{
-				//printf("topic ok\n") ;
-				
-				b_topic_ok = true ;
-				break ;
-			}
-		}
-	}
-
-	printf("Checked Topic : %s - Start Program\n", str_check_topic_name.c_str()) ;
 
 	cv::namedWindow("view", cv::WINDOW_NORMAL);
     cv::setWindowProperty("view", cv::WND_PROP_FULLSCREEN, cv::WINDOW_FULLSCREEN);
 
-	ros::NodeHandle nh;
-	ros::Subscriber sub = nh.subscribe(image_node_name, 5, imageCallback);
+	g_check_time = boost::posix_time::second_clock::local_time();
+	while(1)
+	{
+		ros::NodeHandle nh;
+		ros::Subscriber sub = nh.subscribe(image_node_name, 5, imageCallback);
 
-	ros::spin();
+		while (ros::ok())
+	    {
+	        /*...TODO...*/ 
+
+			//check time
+			boost::posix_time::ptime d_time = boost::posix_time::second_clock::local_time();
+			boost::posix_time::time_duration td = d_time - g_check_time;
+			// result in ms
+			//uint64_t ms = dur.total_milliseconds();
+			// result in usec
+			//uint64_t us = dur.total_microseconds();
+			// result in sec
+			uint64_t d_s = td.total_seconds();
+			if( d_s >= 5 )	
+			{
+				printf("timeout(%d)\n", (int)d_s);
+				sub.shutdown() ;
+				break ;
+			}
+
+	        ros::spinOnce();
+			boost::this_thread::sleep(boost::posix_time::millisec(33));
+
+			//if( sub.getNumPublishers() ==  0) 
+			//{
+			//	printf("getNumPublishers(%d)\n", sub.getNumPublishers());
+			//	sub.shutdown() ;
+			//	break ;
+			//}
+	        //loop_rate.sleep();
+	    }
+
+		boost::this_thread::sleep(boost::posix_time::millisec(1));
+		boost::thread::yield() ;
+	}
+
+	cv::destroyWindow("view");
 
 	return 0 ;
 	//cv::destroyWindow("view");
